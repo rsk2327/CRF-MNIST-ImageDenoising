@@ -84,23 +84,61 @@ def edges(shape=(28,28),dist=4,diag=0):
 #%%
 def getNeighborhoodData(img, dist=1):
     
-    size={1:9,2:25}
     img = np.reshape(img,(28,28))
     
-    newImg = np.zeros( (img.shape[0],img.shape[1],size[dist]) )
+    if dist==1:
+        newImg = np.zeros( (img.shape[0],img.shape[1],9) )
+        
+        newImg[1:,1:,0] = img[:-1,:-1]
+        newImg[:,1:,1] = img[:,:-1]
+        newImg[:-1,1:,2] = img[1:,:-1]
+        newImg[1:,:,3] = img[:-1,:]
+        newImg[:-1,:-1,4] = img[1:,1:]
+        newImg[:-1,:,5] = img[1:,:]
+        newImg[1:,:-1,6] = img[:-1,1:]
+        newImg[:,:-1,7] = img[:,1:]
+        newImg[:,:,8] = img[:,:]
+        
+        return newImg.reshape( img.shape[0]*img.shape[1],9 )
+        
+    elif dist==2:
+        
+        newImg = np.zeros( (img.shape[0],img.shape[1],25) )
+        
+        newImg[2:  , 2: , 0 ] = img[:-2 , :-2]
+        newImg[1:  , 2: , 1 ] = img[:-1 , :-2]
+        newImg[ :  , 2: , 2 ] = img[:   , :-2]
+        newImg[:-1 , 2: , 3 ] = img[1:  , :-2]
+        newImg[:-2 , 2: , 4 ] = img[2:  , :-2]
+        newImg[:-2 , 1: , 5 ] = img[2:  , :-1]
+        newImg[:-2 ,  : , 6 ] = img[2:  , :  ]
+        newImg[:-2 ,:-1 , 7 ] = img[2:  , 1: ]
+        newImg[:-2 ,:-2 , 8 ] = img[2:  , 2: ]
+        newImg[:-1 ,:-2 , 9 ] = img[1:  , 2: ]
+        newImg[:   ,:-2 , 10] = img[:   , 2: ]
+        newImg[1:  ,:-2 , 11] = img[:-1 , 2: ]
+        newImg[2:  ,:-2 , 12] = img[:-2 , 2: ]
+        newImg[2:  ,:-1 , 13] = img[:-2 , 1: ]
+        newImg[2:  , :  , 14] = img[:-2 , :  ]
+        newImg[2:  , 1: , 15] = img[:-2 , :-1]
+        
+        newImg[1:  ,1:  , 16] = img[:-1 , :-1]
+        newImg[:   ,1:  , 17] = img[:   , :-1]
+        newImg[:-1 ,1:  , 18] = img[1:  , :-1]
+        newImg[1:  , :  , 19] = img[:-1 ,   :]
+        newImg[:-1 ,:-1 , 20] = img[1:  ,  1:]
+        newImg[:-1 ,:   , 21] = img[1:  ,   :]
+        newImg[1:  ,:-1 , 22] = img[:-1 ,  1:]
+        newImg[:   ,:-1 , 23] = img[:  ,   1:]
+        newImg[:   , :  , 24] = img[:  ,    :]
+        
+        return newImg.reshape( img.shape[0]*img.shape[1],25 )
+        
+        
+        
     
-    newImg[1:,1:,0] = img[:-1,:-1]
-    newImg[:,1:,1] = img[:,:-1]
-    newImg[:-1,1:,2] = img[1:,:-1]
-    newImg[1:,:,3] = img[:-1,:]
-    newImg[:-1,:-1,4] = img[1:,1:]
-    newImg[:-1,:,5] = img[1:,:]
-    newImg[1:,:-1,6] = img[:-1,1:]
-    newImg[:,:-1,7] = img[:,1:]
-    newImg[:,:,8] = img[:,:]
     
     
-    return newImg.reshape( img.shape[0]*img.shape[1],9 )
             
     
 
@@ -132,8 +170,8 @@ n_train=200
 n_test=100
 num_iter=40
 C=0.1
-dist=2
-diag=0
+dist=1
+diag=1
 inference="ad3"
 
 edgeList = edges((28,28),dist=dist,diag=diag)
