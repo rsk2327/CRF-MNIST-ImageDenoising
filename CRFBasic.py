@@ -111,13 +111,17 @@ n_train=200
 n_test=100
 num_iter=40
 C=0.1
-dist=2
+dist=0
 diag=0
 inference="ad3"
 
-edgeList = edges((28,28),dist=dist,diag=diag)
 
-G = [edgeList for x in trainDirty[0:n_train]]
+
+if dist==0:
+    G=[np.empty((0, 2), dtype=np.int) for x in trainDirty[0:n_train]]
+else:
+    edgeList = edges((28,28),dist=dist,diag=diag)
+    G = [edgeList for x in trainDirty[0:n_train]]
 
 X_flat = [np.vstack(i) for i in trainDirty[0:n_train]]
 Y_flat = np.array(trainLabels[0:n_train])
@@ -130,7 +134,10 @@ svm.fit(asdf,Y_flat)
 
 #%%
 
-G2 = [edgeList for x in testDirty[0:n_test]]
+if dist==0:
+    G2 = G=[np.empty((0, 2), dtype=np.int) for x in testDirty[0:n_test]]
+else:
+    G2 = [edgeList for x in testDirty[0:n_test]]
 
 X_flat2 = [np.vstack(i) for i in testDirty[0:n_test]]
 Y_flat2 = np.array(testLabels[0:n_test])
@@ -158,11 +165,11 @@ print "The test set DICE is %f" %(errTest)
 
 resultsDir = os.getcwd()+"/Results"
 resultFile  = open(resultsDir + "/results.csv",'a')
-resultFile.write(str(num_iter)+","+str(dist)+","+str(diag)+","+inference+","+str(errTrain)+","+str(errTest)+","+"3x3neighbor"+"\n")
+resultFile.write(str(num_iter)+","+str(dist)+","+str(diag)+","+inference+","+str(errTrain)+","+str(errTest)+"\n")
 resultFile.close()
 
 nameLen = len(os.listdir(resultsDir))
-filename = str(nameLen)+"_"+str(dist)+"_"+str(diag)+"_"+inference+"_"+"3x3neighbor"
+filename = str(nameLen)+"_"+str(dist)+"_"+str(diag)+"_"+inference
 predFileTrain = open(resultsDir+"/"+filename+"_Train.pkl",'wb')
 predFileTest = open(resultsDir+"/"+filename+"_Test.pkl",'wb')
 cPickle.dump(predTrain,predFileTrain,protocol=cPickle.HIGHEST_PROTOCOL)

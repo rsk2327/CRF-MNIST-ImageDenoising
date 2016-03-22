@@ -444,4 +444,5 @@ def extractTestSlices(folderPath,padding=(0,0,0,0)):
     return[np.array(postLayers),truthLayers,sliceShape]
     
     
-    
+def accuracy(x,y):
+    return np.sum(x[y==1])*2.0/(np.sum(x) + np.sum(y))
