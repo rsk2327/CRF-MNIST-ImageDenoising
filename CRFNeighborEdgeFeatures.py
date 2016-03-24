@@ -16,7 +16,6 @@ import matplotlib.pyplot as plt
 
 import itertools
 os.chdir('/home/rsk/Documents/PyStruct/CRF-MNIST-ImageDenoising/')
-#os.chdir('/home/bmi/CRF/CRF-MNIST-ImageDenoising/')
 from pystruct.models import GraphCRF, LatentNodeCRF, EdgeFeatureGraphCRF
 from pystruct.learners import NSlackSSVM, OneSlackSSVM, LatentSSVM
 from pystruct.datasets import make_simple_2x2
@@ -178,11 +177,11 @@ edgeList = edges((28,28),dist=dist,diag=diag)
 
 G = [edgeList for x in trainDirty[0:n_train]]
 
-X_flat = [np.vstack(i) for i in trainDirty[0:n_train]]
+X_flat = [getNeighborhoodData(i) for i in trainDirty[0:n_train]]
 Y_flat = np.array(trainLabels[0:n_train])
 
 crf = EdgeFeatureGraphCRF(inference_method=inference)
-svm = NSlackSSVM(model=crf,max_iter=num_iter,C=C,n_jobs=-1,verbose=1)
+svm = NSlackSSVM(model=crf,max_iter=num_iter,C=C,n_jobs=6,verbose=1)
 
 #%%
 edgeFeatures=[]
@@ -190,7 +189,7 @@ edgeFeatures=[]
 for i in range(len(X_flat)):
     feature=[]
     for j in range(len(edgeList)):
-        feature.append( np.append(X_flat[i][edgeList[j][0]] , X_flat[i][edgeList[j][1]])  )
+        feature.append( np.append(X_flat[i][edgeList[j][0]] , X_flat[i][edgeList[j][0]])  )
     edgeFeatures.append(feature)
 edgeFeatures=np.array(edgeFeatures)      
         
@@ -203,7 +202,7 @@ svm.fit(asdf,Y_flat)
 
 G2 = [edgeList for x in testDirty[0:n_test]]
 
-X_flat2 = [np.vstack(i) for i in testDirty[0:n_test]]
+X_flat2 = [getNeighborhoodData(i) for i in testDirty[0:n_test]]
 Y_flat2 = np.array(testLabels[0:n_test])
 
 edgeFeatures2=[]
@@ -211,7 +210,7 @@ edgeFeatures2=[]
 for i in range(len(X_flat2)):
     feature=[]
     for j in range(len(edgeList)):
-        feature.append( np.append(X_flat2[i][edgeList[j][0]] , X_flat2[i][edgeList[j][1]])  )
+        feature.append( np.append(X_flat2[i][edgeList[j][0]] , X_flat2[i][edgeList[j][0]])  )
     edgeFeatures2.append(feature)
 edgeFeatures2=np.array(edgeFeatures2)        
 

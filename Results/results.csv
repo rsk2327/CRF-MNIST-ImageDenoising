@@ -18,3 +18,4 @@ iterations,Dist,Diag,Inference,TrainDice,TestDice,,n_train,n_test
 40,1,0,ad3,0.9434263956,0.9374108797,5x5neighbor,,
 40,1,0,ad3,0.9390383548,0.9355400107,3x3neighbor,,
 40,1,1,ad3,0.9361431051,0.9303169826,3x3neighbor,,
+40,1,1,ad3,0.721480021465,0.690877076249,3x3neighbor,200,100
