@@ -177,23 +177,44 @@ edgeList = edges((28,28),dist=dist,diag=diag)
 
 G = [edgeList for x in trainDirty[0:n_train]]
 
-X_flat = [getNeighborhoodData(i) for i in trainDirty[0:n_train]]
+X_flat = [np.vstack(i) for i in trainDirty[0:n_train]]
 Y_flat = np.array(trainLabels[0:n_train])
 
-crf = GraphCRF(inference_method=inference)
+crf = EdgeFeatureGraphCRF(inference_method=inference)
 svm = NSlackSSVM(model=crf,max_iter=num_iter,C=C,n_jobs=6,verbose=1)
 
-asdf = zip(X_flat,G)
+#%%
+edgeFeatures=[]
+
+for i in range(len(X_flat)):
+    feature=[]
+    for j in range(len(edgeList)):
+        feature.append( np.append(X_flat[i][edgeList[j][0]] , X_flat[i][edgeList[j][0]])  )
+    edgeFeatures.append(feature)
+        
+        
+asdf = zip(X_flat,G,edgeFeatures)        
+#%%
+
 svm.fit(asdf,Y_flat)
 
 #%%
 
 G2 = [edgeList for x in testDirty[0:n_test]]
 
-X_flat2 = [getNeighborhoodData(i) for i in testDirty[0:n_test]]
+X_flat2 = [np.vstack(i) for i in testDirty[0:n_test]]
 Y_flat2 = np.array(testLabels[0:n_test])
 
-asdf2 = zip(X_flat2,G2)
+edgeFeatures2=[]
+
+for i in range(len(X_flat2)):
+    feature=[]
+    for j in range(len(edgeList)):
+        feature.append( np.append(X_flat2[i][edgeList[j][0]] , X_flat2[i][edgeList[j][0]])  )
+    edgeFeatures2.append(feature)
+        
+
+asdf2 = zip(X_flat2,G2,edgeFeatures2)
 
 predTrain = svm.predict(asdf)
 errTrain = 0
