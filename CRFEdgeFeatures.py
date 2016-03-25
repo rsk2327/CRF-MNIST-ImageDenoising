@@ -240,11 +240,11 @@ print "The test set DICE is %f" %(errTest)
 
 resultsDir = os.getcwd()+"/Results"
 resultFile  = open(resultsDir + "/results.csv",'a')
-resultFile.write(str(num_iter)+","+str(dist)+","+str(diag)+","+inference+","+str(errTrain)+","+str(errTest)+","+"3x3neighbor"+","+str(n_train)+","+str(n_test)+"\n")
+resultFile.write(str(num_iter)+","+str(dist)+","+str(diag)+","+inference+","+str(errTrain)+","+str(errTest)+","+str(n_train)+","+str(n_test)+"EdgeFeature"+"\n")
 resultFile.close()
 
 nameLen = len(os.listdir(resultsDir))
-filename = str(nameLen)+"_"+str(dist)+"_"+str(diag)+"_"+inference+"_"+"3x3neighbor"
+filename = str(nameLen)+"_"+str(dist)+"_"+str(diag)+"_"+inference+"_"+"EdgeFeature"
 predFileTrain = open(resultsDir+"/"+filename+"_Train.pkl",'wb')
 predFileTest = open(resultsDir+"/"+filename+"_Test.pkl",'wb')
 cPickle.dump(predTrain,predFileTrain,protocol=cPickle.HIGHEST_PROTOCOL)

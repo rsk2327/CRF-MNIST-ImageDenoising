@@ -15,7 +15,8 @@ import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 
 import itertools
-os.chdir('/home/rsk/Documents/PyStruct/CRF-MNIST-ImageDenoising/')
+#os.chdir('/home/rsk/Documents/PyStruct/CRF-MNIST-ImageDenoising/')
+os.chdir('/home/bmi/CRF/CRF-MNIST-ImageDenoising/')
 from pystruct.models import GraphCRF, LatentNodeCRF, EdgeFeatureGraphCRF
 from pystruct.learners import NSlackSSVM, OneSlackSSVM, LatentSSVM
 from pystruct.datasets import make_simple_2x2
@@ -167,10 +168,10 @@ testLabels = np.array(testLabels)
 
 n_train=200
 n_test=100
-num_iter=40
+num_iter=20
 C=0.1
 dist=1
-diag=1
+diag=0
 inference="ad3"
 
 edgeList = edges((28,28),dist=dist,diag=diag)
@@ -180,8 +181,8 @@ G = [edgeList for x in trainDirty[0:n_train]]
 X_flat = [getNeighborhoodData(i) for i in trainDirty[0:n_train]]
 Y_flat = np.array(trainLabels[0:n_train])
 
-crf = EdgeFeatureGraphCRF(inference_method=inference)
-svm = NSlackSSVM(model=crf,max_iter=num_iter,C=C,n_jobs=6,verbose=1)
+crf = GraphCRF(inference_method=inference)
+svm = NSlackSSVM(model=crf,max_iter=num_iter,C=C,n_jobs=-1,verbose=1)
 
 #%%
 edgeFeatures=[]
@@ -189,11 +190,12 @@ edgeFeatures=[]
 for i in range(len(X_flat)):
     feature=[]
     for j in range(len(edgeList)):
-        feature.append( np.append(X_flat[i][edgeList[j][0]] , X_flat[i][edgeList[j][0]])  )
+        feature.append( np.append(X_flat[i][edgeList[j][0]] , X_flat[i][edgeList[j][1]])  )
     edgeFeatures.append(feature)
 edgeFeatures=np.array(edgeFeatures)      
         
-asdf = zip(X_flat,G,edgeFeatures)        
+#asdf = zip(X_flat,G,edgeFeatures)        
+asdf = zip(X_flat,G)                
 #%%
 
 svm.fit(asdf,Y_flat)
@@ -210,11 +212,12 @@ edgeFeatures2=[]
 for i in range(len(X_flat2)):
     feature=[]
     for j in range(len(edgeList)):
-        feature.append( np.append(X_flat2[i][edgeList[j][0]] , X_flat2[i][edgeList[j][0]])  )
+        feature.append( np.append(X_flat2[i][edgeList[j][0]] , X_flat2[i][edgeList[j][1]])  )
     edgeFeatures2.append(feature)
 edgeFeatures2=np.array(edgeFeatures2)        
 
-asdf2 = zip(X_flat2,G2,edgeFeatures2)
+#asdf2 = zip(X_flat2,G2,edgeFeatures2)
+asdf2 = zip(X_flat2,G2)
 
 #%%
 predTrain = svm.predict(asdf)
@@ -238,15 +241,18 @@ print "The test set DICE is %f" %(errTest)
 
 
 resultsDir = os.getcwd()+"/Results"
-resultFile  = open(resultsDir + "/results.csv",'a')
-resultFile.write(str(num_iter)+","+str(dist)+","+str(diag)+","+inference+","+str(errTrain)+","+str(errTest)+","+"3x3neighbor"+","+str(n_train)+","+str(n_test)+"\n")
-resultFile.close()
 
 nameLen = len(os.listdir(resultsDir))
-filename = str(nameLen)+"_"+str(dist)+"_"+str(diag)+"_"+inference+"_"+"3x3neighbor"
+filename = str(nameLen)+"_"+str(dist)+"_"+str(diag)+"_"+inference+"_"+"NeighborEdgeFeature"
 predFileTrain = open(resultsDir+"/"+filename+"_Train.pkl",'wb')
 predFileTest = open(resultsDir+"/"+filename+"_Test.pkl",'wb')
 cPickle.dump(predTrain,predFileTrain,protocol=cPickle.HIGHEST_PROTOCOL)
 cPickle.dump(predTest,predFileTest,protocol=cPickle.HIGHEST_PROTOCOL)
 predFileTrain.close()
 predFileTest.close()
+
+
+
+resultFile  = open(resultsDir + "/results.csv",'a')
+resultFile.write(str(num_iter)+","+str(dist)+","+str(diag)+","+inference+","+str(errTrain)+","+str(errTest)+","+str(n_train)+","+str(n_test)+filename+",3x3neighbor,"+"edgeFeature_None"+"\n")
+resultFile.close()

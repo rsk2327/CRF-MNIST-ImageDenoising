@@ -15,7 +15,8 @@ import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 
 import itertools
-os.chdir('/home/rsk/Documents/PyStruct/CRF-MNIST-ImageDenoising/')
+#os.chdir('/home/rsk/Documents/PyStruct/CRF-MNIST-ImageDenoising/')
+os.chdir('/home/bmi/CRF/CRF-MNIST-ImageDenoising/')
 from pystruct.models import GraphCRF, LatentNodeCRF
 from pystruct.learners import NSlackSSVM, OneSlackSSVM, LatentSSVM
 from pystruct.datasets import make_simple_2x2
@@ -82,7 +83,7 @@ def edges(shape=(28,28),dist=4,diag=0):
     return np.array(edgeList)
     
 #%%
-def getNeighborhoodData(img, dist=1):
+def getNeighborhoodData(img, dist=2):
     
     img = np.reshape(img,(28,28))
     
@@ -170,10 +171,11 @@ n_test=100
 num_iter=40
 C=0.1
 dist=1
-diag=1
+diag=0
 inference="ad3"
 
-edgeList = edges((28,28),dist=dist,diag=diag)
+print "num_train : %d num_test : %d dist : %d diag : %d num_iter : %d"%(n_train,n_test,dist,diag,num_iter)
+edgeList = np.load("/home/bmi/CRF/edges/28x28_dist"+str(dist)+"_diag"+str(diag)+".npy")
 
 G = [edgeList for x in trainDirty[0:n_train]]
 
@@ -181,13 +183,13 @@ X_flat = [getNeighborhoodData(i) for i in trainDirty[0:n_train]]
 Y_flat = np.array(trainLabels[0:n_train])
 
 crf = GraphCRF(inference_method=inference)
-svm = NSlackSSVM(model=crf,max_iter=num_iter,C=C,n_jobs=6,verbose=1)
+svm = NSlackSSVM(model=crf,max_iter=num_iter,C=C,n_jobs=-1,verbose=0)
 
 asdf = zip(X_flat,G)
 svm.fit(asdf,Y_flat)
 
 #%%
-
+print svm.w.shape
 G2 = [edgeList for x in testDirty[0:n_test]]
 
 X_flat2 = [getNeighborhoodData(i) for i in testDirty[0:n_test]]
@@ -215,15 +217,18 @@ print "The test set DICE is %f" %(errTest)
 
 
 resultsDir = os.getcwd()+"/Results"
-resultFile  = open(resultsDir + "/results.csv",'a')
-resultFile.write(str(num_iter)+","+str(dist)+","+str(diag)+","+inference+","+str(errTrain)+","+str(errTest)+","+"3x3neighbor"+","+str(n_train)+","+str(n_test)+"\n")
-resultFile.close()
 
 nameLen = len(os.listdir(resultsDir))
-filename = str(nameLen)+"_"+str(dist)+"_"+str(diag)+"_"+inference+"_"+"3x3neighbor"
+filename = str(nameLen)+"_"+str(dist)+"_"+str(diag)+"_"+inference+"_"+"Neighborhood"
 predFileTrain = open(resultsDir+"/"+filename+"_Train.pkl",'wb')
 predFileTest = open(resultsDir+"/"+filename+"_Test.pkl",'wb')
 cPickle.dump(predTrain,predFileTrain,protocol=cPickle.HIGHEST_PROTOCOL)
 cPickle.dump(predTest,predFileTest,protocol=cPickle.HIGHEST_PROTOCOL)
 predFileTrain.close()
 predFileTest.close()
+
+
+
+resultFile  = open(resultsDir + "/results.csv",'a')
+resultFile.write(str(num_iter)+","+str(dist)+","+str(diag)+","+inference+","+str(errTrain)+","+str(errTest)+","+str(n_train)+","+str(n_test)+filename+",5x5neighbor"+"\n")
+resultFile.close()
