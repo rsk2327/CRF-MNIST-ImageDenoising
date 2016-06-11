@@ -6,6 +6,12 @@ Noisy images of a particular digit are denoised using a trained CRF model. The C
 The problem statement requires the denoising of images of a particular digit using CRF's.
 ![Original and corrupted image of digit 0](https://github.com/rsk2327/CRF-MNIST-ImageDenoising/blob/master/Results/1.png)
 
+## Models
+**CRFBasic.py** Basic model with unary potentials defined by node pixel value.
+**CRFBasic_Iterative.py** Basic model with iterative saving of models at different stages of model training.
+**CRFEdgeFeatures.py** Model with unary potentials defined by node pixel value and pair-wise potential defined pixel values of connecting nodes.
+**CRFNeighborhood.py** Model with unary potentials defined by pixel values of node and neighboring nodes.
+**CRFNeighborEdgeFeatures** Combination of CRFEdgeFeatures and CRFNeighborhood.
 
 
 ## Results
