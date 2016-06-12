@@ -174,6 +174,7 @@ dist=1
 diag=0
 inference="ad3"
 
+print "num_train : %d num_test : %d dist : %d diag : %d num_iter : %d"%(n_train,n_test,dist,diag,num_iter)
 edgeList = edges((28,28),dist=dist,diag=diag)
 
 G = [edgeList for x in trainDirty[0:n_train]]

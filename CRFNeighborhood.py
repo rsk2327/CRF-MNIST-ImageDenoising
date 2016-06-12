@@ -175,7 +175,7 @@ diag=0
 inference="ad3"
 
 print "num_train : %d num_test : %d dist : %d diag : %d num_iter : %d"%(n_train,n_test,dist,diag,num_iter)
-edgeList = np.load("/home/bmi/CRF/edges/28x28_dist"+str(dist)+"_diag"+str(diag)+".npy")
+edgeList = edges((28,28),dist=dist,diag=diag)
 
 G = [edgeList for x in trainDirty[0:n_train]]
 

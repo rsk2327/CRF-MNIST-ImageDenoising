@@ -37,6 +37,64 @@ def sp_noise(image,prob):
                 output[i][j] = image[i][j]
     return output
 
+def viewImg(img):
+    plt.imshow( np.reshape(img,(28,28)) ,cmap=cm.Greys )
+    
+def checkPred(index,train=0):
+    
+    if train==0:
+        plt.subplot(121)
+        plt.imshow( np.reshape(trainLabels[index],(28,28)) , cmap=cm.Greys )
+
+        plt.subplot(122)
+        plt.imshow( np.reshape(predTrain[index],(28,28)) , cmap=cm.Greys )
+    else:
+        plt.subplot(121)
+        plt.imshow( np.reshape(testLabels[index],(28,28)) , cmap=cm.Greys )
+        
+        plt.subplot(122)
+        plt.imshow( np.reshape(predTest[index],(28,28)) , cmap=cm.Greys )
+    
+    
+def edges(shape=(28,28),dist=4,diag=0):
+    
+    length = shape[0]*shape[1]
+    mat = np.reshape( list(range(length)), shape  )
+    mat = np.array(mat)  
+    
+    edgeList=[]
+    
+    if diag==1:
+        for i in range(shape[0]):
+            for j in range(shape[1]):
+    
+                for x in range(i,i+dist+1):
+                    for y in range(j-dist,j+dist+1):
+    
+                        if x==i and y==j:    #Avoid edge to self
+                            continue
+                        if x<shape[0] and y>=0 and y<shape[1]:  #Avoid going out of the matri
+                            edgeList.append(np.sort([mat[i,j] , mat[x,y] ]))
+    else:
+        for i in range(shape[0]):
+            for j in range(shape[1]):
+                
+                x=i
+                for y in range(j-dist,j+dist+1):
+                    if x<shape[0] and y>=0 and y<shape[1] and y!=j:  #Avoid going out of the matri
+                        edgeList.append(np.sort([mat[i,j] , mat[x,y] ]))
+                    
+                for x in range(i+1,i+dist+1):
+                    y=j
+                    if x<shape[0] and y>=0 and y<shape[1]:  #Avoid going out of the matri
+                        edgeList.append(np.sort([mat[i,j] , mat[x,y] ]))
+        
+    
+    edgeList =np.array( sorted( np.vstack({tuple(row) for row in edgeList}), key=lambda x : x[0] )     )
+    
+    return np.array(edgeList)
+    
+
 
 
 def gaussianNoise(shape):
